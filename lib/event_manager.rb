@@ -1,6 +1,8 @@
 require 'csv'
 require 'google/apis/civicinfo_v2'
 require 'erb'
+require 'date'
+require 'time'
 
 def clean_zipcode(zipcode)
   zipcode.to_s.rjust(5, '0')[0..4]
@@ -31,6 +33,19 @@ def save_thank_you_letter(id, form_letter)
   end
 end
 
+def format_phone_number(phone_number)
+  if phone_number.length > 10 && phone_number[0] == '1'
+    phone_number.slice!(0)
+    phone_number.insert(3, '-').insert(7, '-')
+  elsif phone_number.length < 10 || phone_number.length > 11
+    phone_number = 'Invalid phone number.'
+  else
+    phone_number.insert(3, '-').insert(7, '-')
+  end
+
+  puts phone_number
+end
+
 puts 'Event Manager Initialized!'
 
 contents = CSV.open(
@@ -47,8 +62,16 @@ contents.each do |row|
   name = row[:first_name]
   zipcode = clean_zipcode(row[:zipcode])
   legislators = legislator_by_zipcode(zipcode)
-
   form_letter = erb_template.result(binding)
 
   save_thank_you_letter(id, form_letter)
+
+  phone_number = row[:homephone].scan(/\d+/).join('')
+  # format_phone_number(phone_number)
+
+  time = Time.parse(row[1].split(' ')[1])
+  time.hour
+
+  date = Date.strptime(row[1], "%m/%d/%Y")
+  puts date.wday
 end
