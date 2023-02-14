@@ -43,7 +43,37 @@ def format_phone_number(phone_number)
     phone_number.insert(3, '-').insert(7, '-')
   end
 
-  puts phone_number
+  phone_number
+end
+
+def hour_of_day(time)
+  if time == 12
+    "#{time} PM"
+  elsif time > 12
+    "#{time - 12} PM"
+  elsif time == 0
+    "#{time + 12} AM"
+  else
+    "#{time} AM"
+  end
+end
+
+def day_of_week(date)
+  if date == 0
+    date = 'Sunday'
+  elsif date == 1
+    date = 'Monday'
+  elsif date == 2
+    date = 'Tuesday'
+  elsif date == 3
+    date = 'Wednesday'
+  elsif date == 4
+    date = 'Thursday'
+  elsif date == 5
+    date = 'Friday'
+  else
+    date = 'Satuday'
+  end
 end
 
 puts 'Event Manager Initialized!'
@@ -67,11 +97,8 @@ contents.each do |row|
   save_thank_you_letter(id, form_letter)
 
   phone_number = row[:homephone].scan(/\d+/).join('')
-  # format_phone_number(phone_number)
+  time = Time.parse(row[1].split(' ')[1]).hour
+  date = Date.strptime(row[1], "%m/%d/%Y").wday
 
-  time = Time.parse(row[1].split(' ')[1])
-  time.hour
-
-  date = Date.strptime(row[1], "%m/%d/%Y")
-  puts date.wday
+  puts "#{format_phone_number(phone_number)}, #{hour_of_day(time)}, #{day_of_week(date)}"
 end
